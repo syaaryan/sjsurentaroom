@@ -9,7 +9,6 @@ import java.util.List;
 // REST API Endpoints
 @RestController
 @RequestMapping("/rooms")
-@CrossOrigin(origins = "http://localhost:5173")
 public class RoomController {
 
     private final RoomService roomService;
