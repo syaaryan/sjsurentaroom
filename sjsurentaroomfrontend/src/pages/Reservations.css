@@ -1,0 +1,239 @@
+.reservations-page {
+  min-height: calc(100vh - 64px);
+  background: #f4f7ff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.reservations-hero {
+  padding: 2.5rem 2rem 1.5rem;
+}
+
+.reservations-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0d1b3e;
+  margin: 0 0 0.3rem;
+}
+
+.reservations-subtitle {
+  font-size: 0.95rem;
+  color: #5a6a8a;
+  margin: 0;
+}
+
+.reservations-content {
+  max-width: 860px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Tabs ── */
+
+.reservations-tabs {
+  display: flex;
+  border: 1.5px solid #dce6ff;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.reservations-tab {
+  flex: 1;
+  padding: 0.7rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  color: #5a6a8a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.reservations-tab.active {
+  background: #1e3a8a;
+  color: #fff;
+}
+
+.reservations-tab:not(.active):hover {
+  background: #eef3ff;
+  color: #1e3a8a;
+}
+
+.reservations-tab-count {
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+}
+
+.reservations-tab.active .reservations-tab-count {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ── Empty state ── */
+
+.reservations-empty {
+  background: #fff;
+  border: 1.5px solid #dce6ff;
+  border-radius: 12px;
+  padding: 2.5rem;
+  text-align: center;
+  color: #5a6a8a;
+  font-size: 0.95rem;
+}
+
+/* ── Reservation list ── */
+
+.reservations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Reservation card ── */
+
+.res-card {
+  background: #fff;
+  border: 1.5px solid #dce6ff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.res-card:hover {
+  box-shadow: 0 4px 16px rgba(26, 86, 219, 0.08);
+}
+
+.res-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.res-room-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0d1b3e;
+  margin: 0 0 0.2rem;
+}
+
+.res-confirmation {
+  font-size: 0.8rem;
+  color: #1a56db;
+  margin: 0;
+}
+
+/* ── Status badge ── */
+
+.res-status-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.res-status-badge.confirmed {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1.5px solid #86efac;
+}
+
+.res-status-badge.cancelled {
+  background: #f5f5f5;
+  color: #6b7280;
+  border: 1.5px solid #d1d5db;
+}
+
+/* ── Meta row ── */
+
+.res-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-size: 0.875rem;
+  color: #3a4a6a;
+}
+
+.res-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+
+/* ── Notes ── */
+
+.res-notes {
+  font-size: 0.875rem;
+  color: #5a6a8a;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Divider ── */
+
+.res-card-divider {
+  border: none;
+  border-top: 1px solid #eef2ff;
+  margin: 0;
+}
+
+/* ── Actions ── */
+
+.res-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.res-cancel-btn {
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #dc2626;
+  background: transparent;
+  border: 1.5px solid #dc2626;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+.res-cancel-btn:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.res-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Loading / error ── */
+
+.reservations-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  font-size: 1rem;
+  color: #5a6a8a;
+}

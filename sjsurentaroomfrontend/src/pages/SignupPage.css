@@ -1,0 +1,20 @@
+/* SignupPage shares all base auth styles from LoginPage.css */
+@import './LoginPage.css';
+
+/* ── Two-column name row ──────────────────────────────────────────────────── */
+
+.auth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* Prevent grid children from overflowing the card */
+.auth-row .auth-field {
+  min-width: 0;
+}
+
+.auth-row .auth-field input {
+  width: 100%;
+  box-sizing: border-box;
+}

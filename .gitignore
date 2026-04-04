@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Env files
+.env
+.env.local
+.env*.local
+
+# Backend build
+sjsurentaroombackend/target/
+
+# Frontend build & deps
+sjsurentaroomfrontend/node_modules/
+sjsurentaroomfrontend/dist/
