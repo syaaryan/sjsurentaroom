@@ -1,27 +1,14 @@
 package com.RentARoom.SJSURentARoom.models;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "rooms")
 public class Room {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roomId;
 
+    private Long roomId;
     private String name;
     private String building;
     private int capacity;
-
-    @Column(columnDefinition = "TEXT")
     private String amenities;
-
-    @Column (columnDefinition = "TEXT")
     private String description;
-
     private boolean availableForBooking = true;
-
 
 
     public Long getRoomId() { return roomId; }

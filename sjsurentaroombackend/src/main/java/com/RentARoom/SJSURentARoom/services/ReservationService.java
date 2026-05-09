@@ -1,45 +1,98 @@
 package com.RentARoom.SJSURentARoom.services;
 
+import com.RentARoom.SJSURentARoom.dto.NotificationRequest;
+import com.RentARoom.SJSURentARoom.integration.NotificationClient;
 import com.RentARoom.SJSURentARoom.models.*;
 import com.RentARoom.SJSURentARoom.repositories.*;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
+import java.util.List;
 
 @Service
 public class ReservationService {
+
+    private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
+
     private final ReservationRepository reservationRepository;
     private final AvailabilityRepository availabilityRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
+    private final NotificationClient notificationClient;
+    private final Counter bookingSuccessCounter;
+    private final Counter bookingFailureCounter;
 
     @Lazy
     @Autowired
     private ReservationService self;
 
-    public ReservationService(ReservationRepository reservationRepository, AvailabilityRepository availabilityRepository, UserRepository userRepository, RoomRepository roomRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              AvailabilityRepository availabilityRepository,
+                              UserRepository userRepository,
+                              RoomRepository roomRepository,
+                              NotificationClient notificationClient,
+                              MeterRegistry registry) {
         this.reservationRepository = reservationRepository;
         this.availabilityRepository = availabilityRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
+        this.notificationClient = notificationClient;
+        this.bookingSuccessCounter = registry.counter("reservations.bookings", "result", "success");
+        this.bookingFailureCounter = registry.counter("reservations.bookings", "result", "failure");
     }
+
+    private static class OptimisticConflictException extends RuntimeException {}
 
     public Reservation bookRoom(String email, Long roomId, Long slotId, String notes) {
         int maxAttempts = 3;
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            log.info("Booking attempt {}/{}: user={}, roomId={}, slotId={}",
+                    attempt, maxAttempts, email, roomId, slotId);
             try {
-                return self.attemptBookRoom(email, roomId, slotId, notes);
-            } catch (ObjectOptimisticLockingFailureException e) {
+                Reservation saved = self.attemptBookRoom(email, roomId, slotId, notes);
+                bookingSuccessCounter.increment();
+                log.info("Reservation confirmed: reservationId={}, user={}, roomId={}, slotId={}",
+                        saved.getReservationId(), email, roomId, slotId);
+
+                try {
+                    NotificationRequest notif = new NotificationRequest(
+                            saved.getUser().getEmail(),
+                            saved.getUser().getName(),
+                            saved.getRoom().getName(),
+                            saved.getRoom().getBuilding(),
+                            saved.getSlot().getStartTime().toString(),
+                            saved.getSlot().getEndTime().toString(),
+                            saved.getReservationId()
+                    );
+                    notificationClient.sendConfirmation(notif);
+                } catch (RuntimeException notifyEx) {
+                    log.warn("Notification dispatch failed for reservationId={}: {}",
+                            saved.getReservationId(), notifyEx.getMessage());
+                }
+
+                return saved;
+            } catch (OptimisticConflictException e) {
+                log.warn("Concurrent conflict on slotId={}, attempt={}/{}. Retrying...",
+                        slotId, attempt, maxAttempts);
                 if (attempt == maxAttempts) {
+                    bookingFailureCounter.increment();
+                    log.error("Booking failed after {} attempts for slotId={}, user={}",
+                            maxAttempts, slotId, email);
                     throw new RuntimeException("Slot " + slotId + " is being booked simultaneously. Please try again.");
                 }
+            } catch (RuntimeException e) {
+                bookingFailureCounter.increment();
+                throw e;
             }
         }
+        bookingFailureCounter.increment();
         throw new RuntimeException("Booking failed after " + maxAttempts + " attempts.");
     }
 
@@ -56,8 +109,13 @@ public class ReservationService {
             throw new RuntimeException("Slot is not available!");
         }
 
+        boolean updated = availabilityRepository.updateStatusWithVersion(
+                slot.getSlotId(), Availability.SlotStatus.BOOKED, slot.getVersion());
+        if (!updated) {
+            throw new OptimisticConflictException();
+        }
         slot.setStatus(Availability.SlotStatus.BOOKED);
-        availabilityRepository.save(slot);
+        slot.setVersion(slot.getVersion() + 1);
 
         Reservation reservation = new Reservation();
         reservation.setUser(user);
@@ -72,7 +130,7 @@ public class ReservationService {
     public List<Reservation> getReservationsByUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return reservationRepository.findByUser_UserId(user.getUserId());
+        return reservationRepository.findByUserId(user.getUserId());
     }
 
     public List<Reservation> getAllReservations() {
@@ -84,9 +142,11 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
-        reservation.getSlot().setStatus(Availability.SlotStatus.OPEN);
-        availabilityRepository.save(reservation.getSlot());
+        Availability slot = reservation.getSlot();
+        slot.setStatus(Availability.SlotStatus.OPEN);
+        availabilityRepository.save(slot);
 
         reservationRepository.delete(reservation);
+        log.info("Reservation cancelled: reservationId={}", reservationId);
     }
 }

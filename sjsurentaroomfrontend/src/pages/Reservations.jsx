@@ -51,7 +51,6 @@ export default function Reservations() {
             if (!res.ok) throw new Error()
             setReservations(prev => prev.filter(r => r.reservationId !== reservationId))
         } catch {
-            // leave the card as-is, let the user retry
         } finally {
             setCancelling(prev => {
                 const next = new Set(prev)

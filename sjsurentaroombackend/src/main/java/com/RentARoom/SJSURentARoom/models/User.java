@@ -1,32 +1,18 @@
 package com.RentARoom.SJSURentARoom.models;
 
-import jakarta.persistence.*;
-
-// Entity
-@Entity
-@Table(name = "users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-
     private String name;
-
-    @Column(unique = true, nullable = false)
     private String email;
-
     private String password;
-
-    @Enumerated(EnumType.STRING)
     private Role role;
 
     public enum Role { STUDENT, ADMIN }
 
 
-    
     public Long getUserId() { return userId; }
-    public void setUserId(long userId) { this.userId = userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

@@ -31,7 +31,6 @@
   gap: 1.25rem;
 }
 
-/* ── Tabs ── */
 
 .reservations-tabs {
   display: flex;
@@ -82,7 +81,6 @@
   background: rgba(255,255,255,0.25);
 }
 
-/* ── Empty state ── */
 
 .reservations-empty {
   background: #fff;
@@ -94,7 +92,6 @@
   font-size: 0.95rem;
 }
 
-/* ── Reservation list ── */
 
 .reservations-list {
   display: flex;
@@ -102,7 +99,6 @@
   gap: 1rem;
 }
 
-/* ── Reservation card ── */
 
 .res-card {
   background: #fff;
@@ -139,7 +135,6 @@
   margin: 0;
 }
 
-/* ── Status badge ── */
 
 .res-status-badge {
   font-size: 0.72rem;
@@ -164,7 +159,6 @@
   border: 1.5px solid #d1d5db;
 }
 
-/* ── Meta row ── */
 
 .res-meta {
   display: flex;
@@ -181,7 +175,6 @@
 }
 
 
-/* ── Notes ── */
 
 .res-notes {
   font-size: 0.875rem;
@@ -190,7 +183,6 @@
   font-style: italic;
 }
 
-/* ── Divider ── */
 
 .res-card-divider {
   border: none;
@@ -198,7 +190,6 @@
   margin: 0;
 }
 
-/* ── Actions ── */
 
 .res-card-actions {
   display: flex;
@@ -227,7 +218,6 @@
   cursor: not-allowed;
 }
 
-/* ── Loading / error ── */
 
 .reservations-status {
   display: flex;

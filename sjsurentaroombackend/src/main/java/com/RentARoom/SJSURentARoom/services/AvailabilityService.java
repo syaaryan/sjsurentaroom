@@ -7,15 +7,14 @@ import com.RentARoom.SJSURentARoom.repositories.RoomRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import java.util.List;
 
+import java.util.List;
 
 @Service
 public class AvailabilityService {
 
     private final AvailabilityRepository availabilityRepository;
     private final RoomRepository roomRepository;
-
 
     public AvailabilityService(AvailabilityRepository availabilityRepository, RoomRepository roomRepository) {
         this.availabilityRepository = availabilityRepository;
@@ -27,10 +26,11 @@ public class AvailabilityService {
     }
 
     public List<Availability> getByRoomAndAvailabilities(Long roomId, Availability.SlotStatus availability) {
-        return availabilityRepository.findByRoom_RoomIdAndStatus(roomId, availability);
+        return availabilityRepository.findByRoomIdAndStatus(roomId, availability);
     }
 
     public Availability createAvailability(Availability availability) {
+        if (availability.getStatus() == null) availability.setStatus(Availability.SlotStatus.OPEN);
         return availabilityRepository.save(availability);
     }
 
@@ -38,12 +38,11 @@ public class AvailabilityService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found: " + roomId));
         availability.setRoom(room);
+        if (availability.getStatus() == null) availability.setStatus(Availability.SlotStatus.OPEN);
         return availabilityRepository.save(availability);
     }
 
     public void deleteAvailability(Long id) {
         availabilityRepository.deleteById(id);
     }
-    
-
 }

@@ -1,12 +1,11 @@
 package com.RentARoom.SJSURentARoom.controllers;
 
-import com.RentARoom.SJSURentARoom.models.Room; // Model/Entity
-import com.RentARoom.SJSURentARoom.services.RoomService; // Business Logic
+import com.RentARoom.SJSURentARoom.models.Room;
+import com.RentARoom.SJSURentARoom.services.RoomService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-// REST API Endpoints
 @RestController
 @RequestMapping("/rooms")
 public class RoomController {

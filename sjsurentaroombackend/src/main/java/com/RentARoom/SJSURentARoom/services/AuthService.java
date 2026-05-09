@@ -10,9 +10,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -29,6 +33,7 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            log.warn("Registration rejected: email already in use ({})", request.getEmail());
             throw new RuntimeException("Email already in use");
         }
 
@@ -39,19 +44,26 @@ public class AuthService {
         user.setRole(User.Role.STUDENT);
 
         userRepository.save(user);
+        log.info("User registered: email={}, userId={}", user.getEmail(), user.getUserId());
 
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(token, user.getUserId(), user.getName(), user.getRole().name());
     }
 
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+        } catch (RuntimeException e) {
+            log.warn("Failed login attempt for email={}", request.getEmail());
+            throw e;
+        }
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        log.info("Login successful: email={}", user.getEmail());
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(token, user.getUserId(), user.getName(), user.getRole().name());
     }

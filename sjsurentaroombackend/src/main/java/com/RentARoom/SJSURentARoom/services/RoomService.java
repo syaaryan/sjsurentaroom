@@ -1,12 +1,11 @@
 package com.RentARoom.SJSURentARoom.services;
 
-import com.RentARoom.SJSURentARoom.models.Room; // Entity Model
-import com.RentARoom.SJSURentARoom.repositories.RoomRepository; // DB Queries
+import com.RentARoom.SJSURentARoom.models.Room;
+import com.RentARoom.SJSURentARoom.repositories.RoomRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-// Business Logic
 @Service
 public class RoomService {
     private final RoomRepository roomRepository;
