@@ -12,3 +12,6 @@ sjsurentaroombackend/target/
 # Frontend build & deps
 sjsurentaroomfrontend/node_modules/
 sjsurentaroomfrontend/dist/
+
+# Documents
+*.pdf
