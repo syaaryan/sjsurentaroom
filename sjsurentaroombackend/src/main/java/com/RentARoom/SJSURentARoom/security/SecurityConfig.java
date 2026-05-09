@@ -46,7 +46,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/notify/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/rooms/**", "/availability/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/rooms/**", "/availability/**").hasRole("ADMIN")
